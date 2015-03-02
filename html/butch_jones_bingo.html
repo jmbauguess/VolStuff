@@ -1,0 +1,186 @@
+<html>
+	<head>
+		<title>Butch Jones BINGO</title>
+	</head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script>
+		/**
+		 * shuffle Uses the Fisher-Yates algorithm to shuffle the contents of an array
+		 * http://sedition.com/perl/javascript-fy.html
+		 * @param  {array} array An array to shuffle
+		 * @return {array}       The shuffled version of the array
+		 */
+		function shuffle(array) {
+  			var m = array.length, t, i;
+  			// While there remain elements to shuffle…
+  			while (m) {
+    			// Pick a remaining element…
+    			i = Math.floor(Math.random() * m--);
+    			// And swap it with the current element.
+    			t = array[m];
+    			array[m] = array[i];
+    			array[i] = t;
+  			}
+	  		return array;
+		}
+		/**
+		 * checkCountVertical Checks the Bingo board for veritical completions
+		 */
+		function checkCountVertical(){				
+			var vmap = {'b': 0, 'i': 0, 'n': 0, 'g': 0, 'o': 0};
+			for (var i = 0; i < letterArray.length; i++) {	
+				for (var j = 0; j < 5; j++) {
+					var color = $("#" + letterArray[i] + j).css("background-color");
+					if (color == "rgb(255, 255, 255)"){
+						vmap[letterArray[i]]++;
+					}
+				}				
+			}
+			for (var keys in vmap){
+				if (vmap[keys] == 5) {
+					alert("BINGO!");
+				}
+			}
+		}
+		/**
+		 * checkCountHorizontal Checks the Bingo board for horizontal completions
+		 */
+		function checkCountHorizontal(){
+			var hmap = {'One': 0, 'Two': 0, 'Three': 0, 'Four': 0, 'Five': 0};
+			for (var i = 0; i < bingoArray.length; i++){
+				$("#row" + bingoArray[i]).children('td').each(function(){
+					color = $(this).css("background-color");						
+					if (color == "rgb(255, 255, 255)") {
+						hmap[bingoArray[i]]++;
+					}
+				});
+			}
+			for (var keys in hmap){
+				if (hmap[keys] == 5) {
+					alert("BINGO!");
+				}
+			}
+		}
+		/**
+		 * checkCountDiagonal Checks the Bingo board for diagonal completions
+		 */
+		function checkCountDiagonal(){
+			var diagonalOne = ['b0', 'i1', 'n2', 'g3', 'o4'];
+			var diagonalTwo = ['b4', 'i3', 'n2', 'g1', 'o0'];
+			var diagonalOneCount = 0, diagonalTwoCount = 0;
+			for (var i in diagonalOne) {
+				var color = $("#" + diagonalOne[i]).css("background-color");
+				if (color == "rgb(255, 255, 255)") {
+					diagonalOneCount++;
+				}
+			}
+			for (var i in diagonalTwo) {
+				var color = $("#" + diagonalTwo[i]).css("background-color");
+				if (color == "rgb(255, 255, 255)") {
+					diagonalTwoCount++;
+				}
+			}
+			if (diagonalOneCount == 5 || diagonalTwoCount == 5) {
+				alert("BINGO!");
+			}
+		}	
+		function buildBoard(){
+			bColumn = shuffle(bColumn);
+			iColumn = shuffle(iColumn);
+			nColumn = shuffle(nColumn);
+			gColumn = shuffle(gColumn);
+			oColumn = shuffle(oColumn);
+			for (var letter in letterArray){
+				$("#bingoHeader").append("<td class='cells'>" + letterArray[letter].toUpperCase() + "</td>");
+			}
+			for (var i in bingoArray){
+				$("#row" + bingoArray[i]).append("<td id='b" + i + "' class='cells'>" + bColumn[i] + "</td>");
+				$("#row" + bingoArray[i]).append("<td id='i" + i + "' class='cells'>" + iColumn[i] + "</td>");
+				if (i == 2){
+					$("#row" + bingoArray[i]).append("<td id='n2' class='cells'>FREE!</td>");
+				} else {
+					$("#row" + bingoArray[i]).append("<td id='n" + i + "' class='cells'>" + nColumn[i] + "</td>");
+				}				
+				$("#row" + bingoArray[i]).append("<td id='g" + i + "' class='cells'>" + gColumn[i] + "</td>");
+				$("#row" + bingoArray[i]).append("<td id='o" + i + "' class='cells'>" + oColumn[i] + "</td>");
+			}
+			$("#n2").click();
+		}		
+		var bColumn = ['Effort', '6-3', 'Prideful', 'Individual', 'Population', 'VFL', 'Community', 'Eye Discipline', 'Spread', 'Zone-Read', 'Option', 'Team 119', 'Ball Disruption', 'Film', 'Weight Room'];
+		var iColumn = ['Dobbs',  'North', 'Croom', 'Pig', 'Hurd', 'Kamara', 'Wolf', 'Robertson', 'Crowder', 'Jackson', 'Pearson', 'Dormady', 'Jennings'];
+		var nColumn = ['DeBord', 'Stripling', 'Azzani', 'Jancek', 'Martinez', 'Elder', 'Mahoney'];
+		var gColumn = ['Maggitt', 'Maybin', 'Sutton', 'Bates', 'Kelly', 'Barnett', 'Berry', 'Abernathy', 'Kirkland', 'Jakob', 'Bynum', 'O\'Brien', 'Moseley'];
+		var oColumn = ['Talent', 'Recruiting', 'Develop', 'Program', 'Brick', 'Campus', 'Fans', 'Neyland', '102455', 'Support', 'Facilities', 'Alpha Male', 'Critical', 'One Tennessee'];
+		var bingoArray = ["One", "Two", "Three", "Four", "Five"];
+		var letterArray = ['b', 'i', 'n', 'g', 'o'];		
+		$(document).ready(function(){			
+			buildBoard();				
+			$("td").click(function(){
+				$(this).css('background-color', '#FFF');
+				checkCountVertical();
+				checkCountHorizontal();
+				checkCountDiagonal();
+			});				
+			$("#clear").click(function(){
+				for (var i = 0; i < letterArray.length; i++) {
+					for (var j = 0; j < 5; j++){
+						$("#" + letterArray[i] + j).css("background-color", "#F27D00");
+					}
+				}
+				$("#n2").click();
+			});			
+		});	
+	</script>
+	<style type="text/css">
+		#bingoTable {
+			border: 1px solid #000;		
+			margin-left:auto; 
+    		margin-right:auto;
+		}		
+		#bingoHeader {
+			background-color: #FFFFFF;
+			color: #F27D00;
+			font-size: xx-large;			
+		}
+		#rowOne, #rowTwo, #rowThree, #rowFour, #rowFive {
+			background-color: #F27D00;
+			text-align: center;			
+		}
+		td {
+			width: 120px;
+			height: 120px;
+			text-align: center;
+			border: 1px solid #000;
+		}
+		body {
+			margin-left:auto; 
+    		margin-right:auto;
+    		font-family: Arial;
+		}
+		h2 {
+			text-align: center;
+		}
+		p {
+			text-align: center;
+		}
+		#controlsDiv {
+			text-align: center;
+			padding-top: 12px;
+		}
+	</style>
+	<body>
+		<h2>Butch Jones BINGO</h2>
+		<p>Play this any time there is a Butch Jones press conference.  A page refresh will reset the card.</p>
+		<table id="bingoTable">
+			<tr id="bingoHeader"/>
+			<tr id="rowOne"/>
+			<tr id="rowTwo"/>
+			<tr id="rowThree"/>
+			<tr id="rowFour"/>
+			<tr id="rowFive"/>
+		</table>
+		<div id="controlsDiv">
+			<button id="clear">Clear Selections</button>
+		</div>
+	</body>
+</html>
